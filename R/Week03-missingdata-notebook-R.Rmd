@@ -1,0 +1,203 @@
+---
+title: "R data types notebook"
+author: "Dr Brittany Blankinship"
+date: "`r Sys.Date()`"
+toc: true
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# first lets load the libraries we need for this notebook 
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse) # as the tidyverse is a whole suite of packages, we just need one lirbary call to load all that we need 
+```
+
+
+## 1. Introduction 
+
+In these notebooks we will be looking at the data types discussed in the Week 2 & 3 content, how they work in R, and how you can manipulate them. A data type of an object or variable specifies the type of data that is stored inside that object and how you can then interact with it.
+
+✅  *Reminder* that you can open the RMarkdown document outline at the top of this panel to navigate to different sections in this notebook. You can also collapse sections my clicking on the little arrow that appears by the line number. Note though that if you collapse a level 2 section, all level 3 sections contained within it will also collapse. Try this for line 16 Introduction to see what I mean
+
+*📝 Note* there is code throughout this workbooks which will intentionally produce an error. Try to read the error messages and see if you can understand what is causing the problem and why. Reading error messages and not being frightened by them is a key skill for any programmer! Review the materials from the Week 2 tutorial on reading error messages - remember, you are the detective! 🔍 
+
+✅ These errors mean that you will not be able to knit the document unless you comment out the code that generates them. 
+
+✅ Remember to RUN ALL CODE CHUNKS IN ORDER AS YOU GO THROUGH THIS NOTEBOOK (if you skip some, you might see some unexpected errors)
+
+✅ Do not forget about the keyboard shortcuts for running code in RMD documents:
+
+* Ctrl/Cmd + Enter to run the current line/selection of code (if highlighted)
+
+* Ctrl/Cmd + Shift + Enter to run the entire code chunk 
+
+
+### 1.1 R has 5 basic types.
+
+* logical: TRUE, FALSE  
+* numeric: 1.0, 15.3
+  - double: 1.0, 15.3
+  - integer: -1,2  
+* complex: 1+4i  
+* character: "health care", "social care"
+
+Another important data type that helps to interact with categorical variables is 
+
+* factor: "apple", "banana", "orange"
+
+To work with date and time data we use the `{lubridate}` package 
+
+* date: "2026-07-01"
+* time: "15:30:43"
+* datetime: "2026-07-01 15:30:43 UTC"
+
+### 1.2 R also provides many functions to examine data type features, for example:  
+
+* `mode()` - how is the object stored in R? 
+* `class()` - what kind of object is it (high-level)?  
+* `typeof()` - what is the object’s data type (low-level)?  
+* `length()` - how long is the data?  
+
+If you would like to check if an object is a particular data type, there is a series of `"is.datatype()"` functions which produce a Boolean value output:
+
+* `is.logical()` to check if the data object holds a logical value (i.e., `TRUE` or `FALSE`)
+* `is.numeric()` to check if the data object is numeric
+* `is.double()` to check if the data object is a double-precision floating point number 
+* `is.integer()` to check if the data object is an integer
+* `is.complex()` to check if the data object is complex
+* `is.character()` to check if the data object is character
+* `is.factor()` to check if the data object is a nominal factor
+* `is.ordered()` to check if the data object is an ordinal factor 
+
+#### 1.2.1 datetime data 
+
+For datetime data `{lubridate}` also has a series of `"is.X()"` functions which mirror the constructors in base R above:
+
+* `is.Date()` to check if the data is a Date type
+* `is.timespan()` to check if the data object is a length of time 
+
+
+#### 1.2.2 Changing datatypes (i.e., type coercion) 
+
+To coerce or change an object to another data type, there is a series of `as.datatype()` functions 
+
+* `as.logical()` 
+* `as.numeric()`
+* `as.double()`
+* `as.integer()`
+* `as.complex()`
+* `as.character()`
+
+* `fct()` to encode a vector as a factor. There are `is._()` and `as._()` functions for membership and coercion 
+  - `as_factor()`: note the syntax difference from the other functions (using an underscore rather than a dot). This is because we will be using the factor coercion function from the `{forcats}` package rather than base R. See the Factor section for more details 
+  - `as.ordered()`: defaults to lexical ordering (alphabetical order) for coerced characters
+
+* `as_datetime()` 
+* `as_date()`
+
+#### 1.2.3 Describing dataframes 
+
+When working with dataframes (which we will learn more about in Week 4), there are 2 similar functions that are useful:  
+
+* `str()` to get the structure of an R object 
+* `dplyr::glimpse()` to see a more detailed glimpse of the structure of a dataframe, including a preview of the data 
+
+*📝 Note* remember the namespace syntax which uses double colon `::` means `package::function()`? So the above on line 105 means the `glimpse()` function from the `{dplyr}` package 
+
+## 2. Missing data 
+
+In R, `NA` is a valid logical object, where as `NaN` is a special double-precision floating point number representing missing data. When using logical operators, where a component of one of the operands is `NA`, the result will be `NA` if the outcome is ambiguous. In other words, `NA & TRUE` evaluates to `NA` while `NA & FALSE` evaluates to `FALSE`. 
+
+```{r na-1}
+typeof(NA)
+
+NA & TRUE 
+
+NA & FALSE
+```
+
+```{r nan}
+typeof(NaN)
+class(NaN)
+```
+
+For most R functions, missing values are "infectious": whenever a missing value is present, the result will always be missing. You can check if there are missing values using `is.na()` which returns a logical vector
+
+```{r na-2}
+num_obj2 <- c(NA, 6, 78, 230, 3, 39)
+
+is.na(num_obj2)
+```
+
+To get the not `NA` values, we can use the `!` (not) operator or `complete.cases()` which returns a logical vector indicating which cases are complete.
+
+```{r na-3}
+!is.na(num_obj2)
+
+complete.cases(num_obj2)
+```
+
+When computing mathematical operations with missing data, most R functions will return `NA`. This is the case for `abs()`, `sum()`, `min()`, and `max()` described above in the Numeric section. Luckily, there is a logical argument `na.rm = TRUE/FALSE` that can be specified. This asks, 'should missing values (`NA` and `NaN`) be removed?' By default, this is typically set to `FALSE`. When you pull up the documentation for a function in R (`?function()`) if you look under 'Usage' you can see what the default behaviors are for different arguments. 
+
+➡️ Try this for `sum()` now! Look up the documentation and check the default behaviors. 
+
+In general, most R functions have a means of dealing with missing values. Not all will use `na.rm`, so it is good practice to check the documentation when using a new function not only to double-check that the default behavior is as you expect, but also to see how to deal with missing data. 
+
+```{r sum-na}
+sum(num_obj2)
+
+sum(num_obj2, na.rm = TRUE)
+```
+
+When working with characters, you can use `str_replace_na()` to replace missing values with your desired input value. By default, `NA` will be replaced with the character string `"NA"`
+
+```{r na-chr}
+str_ex <- c(NA, "abc", "def")
+str_ex
+
+str_replace_na(str_ex)
+
+## you can also specify the replacement
+str_ex |>
+  str_replace_na(replacement = "Missing")
+
+```
+
+More generally, the `replace_na()` function from the `{tidyr}` package in the `{tidyverse}` is useful to replace `NA` values with a specified value. Particularly when working with data frames this is a useful function. 
+
+```{r rpl-na}
+num_obj2 |> 
+  replace_na(replace = 0)
+
+# Note: replacing NAs with 0 is not always good practice, particularly when 0 is meaning in the context of the data. You need to think carefully about your data and what is appropriate. 
+```
+
+What happens if we try to replace the missing numeric value with a character string? 
+
+```{r rpl-na-2}
+# uncomment the code below to find out 
+#num_obj2 |> 
+#  replace_na(replace = "missing") 
+```
+
+Oh no! A data type error! Because `num_obj2` is numeric/double, the missing value must also be replaced with a numeric value. 
+
+When working with data frames, to fill missing values in selected columns using the next or previous entry, we can use the `fill()` function from `{tidyr}`. This is useful in the common output format where values are not repeated, and are only recorded when they change. Additionally, to exclude rows with missing data there is the `drop_na()` function from `{tidyr}`. We will explore this more next week! 
+
+That's all for now around missing data - we will return to this topic next week in greater detail with different data structures. 
+
+## You did it! 🎉
+
+Well done for making it to the end of this notebook, which if you have worked through the notebooks in the order of the content is the last R notebook for Weeks 2 and 3. If you have not done so yet, move to the Python missing data notebook next.
+
+---
+*Dr. Brittany Blankinship (2026)* 

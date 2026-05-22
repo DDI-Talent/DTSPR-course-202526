@@ -1,0 +1,436 @@
+---
+title: "R data types notebook"
+subtitle: "Factors"
+author: "Dr Brittany Blankinship"
+date: "`r Sys.Date()`"
+toc: true
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# first lets load the libraries we need for this notebook 
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse) # as the tidyverse is a whole suite of packages, we just need one lirbary call to load all that we need 
+```
+
+
+## 1. Introduction 
+
+In these notebooks we will be looking at the data types discussed in the Week 2 & 3 content, how they work in R, and how you can manipulate them. A data type of an object or variable specifies the type of data that is stored inside that object and how you can then interact with it.
+
+✅  *Reminder* that you can open the RMarkdown document outline at the top of this panel to navigate to different sections in this notebook. You can also collapse sections my clicking on the little arrow that appears by the line number. Note though that if you collapse a level 2 section, all level 3 sections contained within it will also collapse. Try this for line 16 Introduction to see what I mean
+
+*📝 Note* there is code throughout this workbooks which will intentionally produce an error. Try to read the error messages and see if you can understand what is causing the problem and why. Reading error messages and not being frightened by them is a key skill for any programmer! Review the materials from the Week 2 tutorial on reading error messages - remember, you are the detective! 🔍 
+
+✅ These errors mean that you will not be able to knit the document unless you comment out the code that generates them. 
+
+✅ Remember to RUN ALL CODE CHUNKS IN ORDER AS YOU GO THROUGH THIS NOTEBOOK (if you skip some, you might see some unexpected errors)
+
+✅ Do not forget about the keyboard shortcuts for running code in RMD documents:
+
+* Ctrl/Cmd + Enter to run the current line/selection of code (if highlighted)
+
+* Ctrl/Cmd + Shift + Enter to run the entire code chunk 
+
+
+### 1.1 R has 5 basic types.
+
+* logical: TRUE, FALSE  
+* numeric: 1.0, 15.3
+  - double: 1.0, 15.3
+  - integer: -1,2  
+* complex: 1+4i  
+* character: "health care", "social care"
+
+Another important data type that helps to interact with categorical variables is 
+
+* factor: "apple", "banana", "orange"
+
+To work with date and time data we use the `{lubridate}` package 
+
+* date: "2026-07-01"
+* time: "15:30:43"
+* datetime: "2026-07-01 15:30:43 UTC"
+
+### 1.2 R also provides many functions to examine data type features, for example:  
+
+* `mode()` - how is the object stored in R? 
+* `class()` - what kind of object is it (high-level)?  
+* `typeof()` - what is the object’s data type (low-level)?  
+* `length()` - how long is the data?  
+
+If you would like to check if an object is a particular data type, there is a series of `"is.datatype()"` functions which produce a Boolean value output:
+
+* `is.logical()` to check if the data object holds a logical value (i.e., `TRUE` or `FALSE`)
+* `is.numeric()` to check if the data object is numeric
+* `is.double()` to check if the data object is a double-precision floating point number 
+* `is.integer()` to check if the data object is an integer
+* `is.complex()` to check if the data object is complex
+* `is.character()` to check if the data object is character
+* `is.factor()` to check if the data object is a nominal factor
+* `is.ordered()` to check if the data object is an ordinal factor 
+
+#### 1.2.1 datetime data 
+
+For datetime data `{lubridate}` also has a series of `"is.X()"` functions which mirror the constructors in base R above:
+
+* `is.Date()` to check if the data is a Date type
+* `is.timespan()` to check if the data object is a length of time 
+
+
+#### 1.2.2 Changing datatypes (i.e., type coercion) 
+
+To coerce or change an object to another data type, there is a series of `as.datatype()` functions 
+
+* `as.logical()` 
+* `as.numeric()`
+* `as.double()`
+* `as.integer()`
+* `as.complex()`
+* `as.character()`
+
+* `fct()` to encode a vector as a factor. There are `is._()` and `as._()` functions for membership and coercion 
+  - `as_factor()`: note the syntax difference from the other functions (using an underscore rather than a dot). This is because we will be using the factor coercion function from the `{forcats}` package rather than base R. See the Factor section for more details 
+  - `as.ordered()`: defaults to lexical ordering (alphabetical order) for coerced characters
+
+* `as_datetime()` 
+* `as_date()`
+
+#### 1.2.3 Describing dataframes 
+
+When working with dataframes (which we will learn more about in Week 4), there are 2 similar functions that are useful:  
+
+* `str()` to get the structure of an R object 
+* `dplyr::glimpse()` to see a more detailed glimpse of the structure of a dataframe, including a preview of the data 
+
+*📝 Note* remember the namespace syntax which uses double colon `::` means `package::function()`? So the above on line 105 means the `glimpse()` function from the `{dplyr}` package 
+
+## 2. Factor 
+
+When working with factors, the `{forcats}` package will quickly become your favorite. As with `{stringr}`, `{forcats}` was automatically loaded when we called the `{tidyverse}` at the top of this document. Functions from `{forcats}` typically start with `fct_`. 
+
+Internally, factors in R are integer **values** mapped to character strings. That is to say that factors are stored as a vector of integer values with a corresponding set of character values to use when the factor is displayed. The categories of a categorical variable (factor) are called **levels** in R. Both numeric and character variables can be made into factors, but a factor's levels will always be character values. Notably, unlike in Python, in R both factor values and levels can include missing data. 
+
+Unlike working with categorical data in Python's pandas, you can specify labels at the time of creating a factor object.  
+
+Some useful functions for working with factors include:
+
+* `levels()` to see the levels directory for a factor
+* `summary()` to see the levels of a factor as well as the number of observations per level 
+* `fct_inorder()` to re-order factor levels by the order in which they first appear in the data 
+* `fct_infreq()` to re-order factor levels by the frequency of values within each level (largest first by default)
+* `fct_relevel()` to manually reorder factor levels
+* `fct_recode()` to manually change the factor levels 
+* `fct_expand()` to add additional levels to a factor 
+* `fct_drop()` to drop unused levels 
+* `fct_collapse()` to collapse levels into manually defined groups
+* `fct_lump_()` to collapse the least/most frequent values of a factor into "other"
+  - `fct_lump_min()` lumps level that appear fewer than the specified `min` times
+  - `fct_lump_lowfreq()` lumps together the least frequent levels, ensuring that "other" is still the smallest level
+* `fct_na_value_to_level()` to add `NA` as a factor level, not just in the values
+
+### 2.1 Converting to and from factor data 
+
+There are 2 very similar functions to convert or coerce data to be a nominal factor: 
+
+* `as.factor()` from base R and 
+* `as_factor()` from `{forcats}` in the `{tidyverse}`. 
+
+The primary difference is how coercion from characters works: Compared to base R, when x is a character, the `as_factor()` function creates levels in the order in which they appear, which will be the same on every platform. Base R sorts in the current locale which can vary from place to place.
+
+There is no `{forcats}` alternative for coercing ordinal or ordered factors, so we will be using the base R function `as.ordered()`. 
+
+More generally, when you wish to specify levels or labels when coercing a nominal or ordinal factor, the `fct()` function is useful as it allows for the `levels` argument. `fct()` is from the `{forcats}` package and is a stricter version of the base R `factor()` that errors if your specification of levels is inconsistent with the values in x.
+
+In summary, you can use 3 functions to coerce data into a factor, where 1 and 3 are from base R and 2 and 4 from `{forcats}`: 
+
+1. `as.factor()` from base R
+2. `as_factor()` from the `{tidyverse}`
+3. `factor()` from base R
+4. `fct()` from the `{tidyverse}`
+
+*📝 Note* As a general syntax note, `{tidyverse}` functions tend to use `_` whereas base R functions tend to use `.`. 
+
+
+```{r obj-remake}
+# We made the following objects in previous notebooks from this week. Lets use them again
+
+# numeric vector 
+ii_vec <- c(44L, 687L, 2L, 60L)
+
+# logical vector 
+vlog <- c(TRUE, FALSE, TRUE, FALSE, FALSE, TRUE)
+
+# character vector 
+c_vec <- c("The", "summer", "is", "a", "great", "time", "to", "go", "to", "the", "beach")
+
+```
+
+Numeric vectors can be coerced to nominal and ordinal factor vectors 
+
+```{r fct-coercion-1}
+ii_vec_f <- as_factor(ii_vec)
+
+ii_vec_f 
+
+ii_vec_fo <- as.ordered(ii_vec)
+
+ii_vec_fo
+```
+
+Logical vectors can be coerced to nominal and ordinal factor vectors 
+
+```{r fct-coercion-2}
+vlog_f <- as_factor(vlog)
+
+vlog_f
+
+vlog_fo <- as.ordered(vlog)
+
+vlog_fo
+```
+
+Character vectors can also be coerced to nominal and ordinal factor vectors 
+
+```{r fct-coercion-3}
+v_vec_f <- as_factor(c_vec)
+
+v_vec_f
+
+v_vec_fo <- as.ordered(c_vec)
+
+v_vec_fo
+```
+
+*📝 Note* that the default in R is lexical ordering, so alphabetic order, unless otherwise specified. You can see this clearly in the ordered levels of `v_vec_fo` above. 
+
+You can specify the order of levels using the `fct` function. 
+
+```{r lexical-ordering}
+monthsm <- c("Dec", "Apr", "Jan", "Mar")
+
+monthsm 
+
+typeof(monthsm)
+
+# by default sorting in R is alphabetical 
+sort(monthsm)
+```
+
+Lets instead covert `monthsm` into a factor with levels in a specified order of the calendar months of the year. 
+
+```{r fct-coercion-4}
+# first create a list of the valid levels 
+months_levels <- c("Jan", "Feb", "Mar", "Apr", "May", 
+                   "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
+                   "Dec")
+
+## then create the factor
+
+monthsm_f <- fct(monthsm, levels = months_levels)
+
+summary(monthsm_f)
+levels(monthsm_f)
+is.factor(monthsm_f)
+is.ordered(monthsm_f)
+```
+
+Notice that `monthsm_f` is not ordered, rather we have just sorted the factor levels in a useful way. To make the factor ordinal (AKA ordered), we can pass the data object to `as.ordered()` in our tidy data flow.   
+
+```{r fct-coercion-5}
+monthsm_fo <- monthsm |> 
+  fct(levels = months_levels) |>
+  as.ordered()
+
+summary(monthsm_fo)
+levels(monthsm_fo)
+is.factor(monthsm_fo)
+is.ordered(monthsm_fo)
+class(monthsm_fo)
+```
+
+The code chunk above I have used the syntax of the pipe `|>` as it included more than 1 function. When working with the pipe, we always start with the data objects (in this case `monthsm`) which is then piped to the function of interest which can then be piped to subsequent functions. When using the pipe you do not need to specify the data argument of functions, as it automatically fills this in for you. 
+
+You can think of the pipe as saying "and then". So, in plain language, this code says "take the data object monthm and then make it a factor with the levels equal to months_levels, and then take that and make it an ordered factor."
+
+**📝 Note** as mentioned in Week 1 topic 4.2, there are 2 pipe operators you can use in R. In this case, I am using the newer native pipe `|>` rather than the `{magrittr}` pipe `%>%`. In the code in this workbook, it would not make a difference if you switched out `|>` for `%>%`. Outside of advanced use cases, it is largely a stylistic choice. So pick your favorite pipe and stick with it, **do not use both pipes at the same time**. 
+
+Any values not in the levels set will bring up an error when using `fct()`, which is one of the many reasons to use this function. You will not be unintentionally creating missing values with typos!
+
+```{r fct-coercion-6}
+monthsm_f2 <- fct(c("feb", "Aug", "May", "Jun"),
+                  levels = months_levels) 
+# this will produce an error as feb does not exist in month_levels
+
+```
+In this case, the error message is actually quite helpful - 'ℹ Missing level: "feb" '
+
+
+```{r fct-coercion-fix}
+monthsm_f2 <- fct(c("Feb", "Aug", "May", "Jun"), 
+                  levels = months_levels)
+
+monthsm_f2
+is.factor(monthsm_f2)
+```
+
+In some case you may wish to order the levels to match how they first appear in the data. We can do that when creating the factor by setting levels to `unique()`, or after the fact, with `fct_inorder()`. When using `fct()` to create a factor, if you do not specify the `levels` argument, by default the levels will be computed from the unique values of x, in the order in which they occur. To be more explicit in your code with your wish to have the levels match how they appear first in the data, you should use `unique()`. 
+
+```{r fct-coercion-7}
+fct(c("Dec", "Apr", "Jan", "Mar"))
+
+# more explicit code, not relying on default behaviors 
+fct(c("Dec", "Apr", "Jan", "Mar"), 
+    levels = unique(monthsm))
+
+```
+
+```{r fct-coercion-8}
+monthsm_fo |>
+  fct_inorder()
+# the levels are now ordered by how they first appeared in the data, not by the months_levels list 
+```
+
+In plain language, the code above says "take the data object monthsm_fo then take that factor and sort the levels by the order in which they first appear". 
+
+### 2.2 Working with factors 
+
+In the section above we already started looking at some of the functions for working with factors, particularly when creating them. Now let's look at different functions for modifying and working with factors. 
+
+```{r fct-injuries}
+# first lets create an object of unintentional injury types to work with 
+injury <- rep(c("Fall", "Fall", "Transport accident", "Crushing",
+                "Scakld", "Accidental exposure"), 4) |> 
+  factor()
+
+injury
+levels(injury)
+```
+
+As we can see, by default our levels are sorted in alphabetical order. To instead change this to be by the frequency of values, we can do the following: 
+
+```{r fctinfreq}
+injury |>
+  fct_infreq() |>
+  levels()
+
+## since we have 8 values for Fall, this is put first. The remaining levels all have 4 values, so are sorted in the default alphabetical order 
+
+summary(injury)
+```
+
+To move or reorder the levels of our factor, we can use `fct_relevel()`. This and `fct_recode()` below are some of the most useful functions in a data cleaning workflow. 
+
+```{r fctrelevel}
+# move Crushing to be first 
+injury |>
+  fct_relevel("Crushing", "Accidental exposure") |>
+  levels()
+```
+
+```{r fctrelevel-pos}
+# you can also use indexing 
+## this moves Fall to the 3rd position 
+injury |>
+  fct_relevel("Fall", after = 2) |>
+  levels()
+```
+
+In looking at the levels of our factor object, we can see there is a typo in "Scald", Let's fix that with `fct_recode()`
+
+```{r fctrecode}
+# note the syntax where the new level is not a character string but the old level is
+## I often forget this syntax and need to look this up 
+injury <- fct_recode(injury, Scald = "Scakld")  
+
+levels(injury)
+```
+
+```{r fctrecode-2}
+# also useful to create new levels entirely and not just fix a typo 
+injury |>
+  fct_recode(`New level` = "Fall", `New level 2` = "Crushing") |>
+  summary()
+
+# note above I used `` around New level because it includes a space! See Week 1 Topic 4.2 for a refresher on naming conventions in R. Remove the `` and see what happens 
+```
+
+To add in additional levels to our factor, we can use `fct_expand()`
+
+```{r fctexpand}
+injury2 <- fct_expand(injury, "Z")
+
+summary(injury2)
+```
+
+We can see that Z has been added, but it is unused. So let's remove it with `fct_drop()`
+
+```{r fctdrop}
+injury2 |>
+  fct_drop() |> 
+  summary()
+```
+
+We can use `fct_collapse()` to collapse or combine levels of a factor into manually defined groups 
+
+```{r fctcollapse}
+injury2 |>
+  fct_collapse(Other = c("Fall", "Scald"),
+               Missing = "Z") |>
+  summary()
+
+# depending on your use case, can be similar to fct_recode()
+# fct_collapse is particularly useful when you want to combine/collapse levels as well as rename/recode them 
+```
+
+You can use `fct_lump_()` to collapse the least/most frequent values of a factor into "other"
+
+```{r fctlump}
+injury2 |>
+  fct_lump_min(min = 5) |> 
+  levels()
+```
+
+`NA`s can be either in the levels or values of a factor. Most factors store `NA`s in the values, as you can see here when converting the `fm` factor object to an integer. 
+
+```{r fctnas-1}
+fm <- fct(c("a", "b", NA, "c", "b", NA))
+
+levels(fm)
+as.integer(fm)
+is.na(fm)
+```
+
+You can change this so that NAs are stored in the levels rather than values, though at the cost of `is.na()` reporting accuracy. However, putting `NA`s in levels allows you to control its display. This is usually something I will do when creating tables or data visualizations where I want to show `NA` as a level of the factor. 
+
+We can make `NA`s explicit in the levels of our factor rather than just the values, with the function `fct_na_value_to_level()`. Notice that the `NA` levels are visually distinct from `NA`s in values, instead represented as `<NA>` as the factor level,
+
+```{r fctnas-2}
+fm2 <- fct_na_value_to_level(fm)
+
+fm2
+levels(fm2) # notice the level is NA itself, not "NA" as a character string
+as.integer(fm2) # and NA is treated as its own level (4 when converted to an integer as it is the 4th level)
+is.na(fm2) # and due to above, there are no values of NA so is.na evaluates to all FALSE 
+
+## you can also specify what you would like the missing level to be labelled, as above this is by default "(Missing)" 
+fct_na_value_to_level(fm, level = "unknown")
+```
+
+
+
+## You did it! 🎉
+
+Well done for making it to the end of this notebook. If you have not done so yet, move to the Python categorical notebook next or the R datetime notebook. 
+
+---
+*Dr. Brittany Blankinship (2026)* 

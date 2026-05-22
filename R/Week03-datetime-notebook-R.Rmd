@@ -1,0 +1,420 @@
+---
+title: "R data types notebook"
+subtitle: "Datetime data"
+author: "Dr Brittany Blankinship"
+date: "`r Sys.Date()`"
+toc: true
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# first lets load the libraries we need for this notebook 
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse) # as the tidyverse is a whole suite of packages, we just need one lirbary call to load all that we need 
+```
+
+
+## 1. Introduction 
+
+In these notebooks we will be looking at the data types discussed in the Week 2 & 3 content, how they work in R, and how you can manipulate them. A data type of an object or variable specifies the type of data that is stored inside that object and how you can then interact with it.
+
+✅  *Reminder* that you can open the RMarkdown document outline at the top of this panel to navigate to different sections in this notebook. You can also collapse sections my clicking on the little arrow that appears by the line number. Note though that if you collapse a level 2 section, all level 3 sections contained within it will also collapse. Try this for line 16 Introduction to see what I mean
+
+*📝 Note* there is code throughout this workbooks which will intentionally produce an error. Try to read the error messages and see if you can understand what is causing the problem and why. Reading error messages and not being frightened by them is a key skill for any programmer! Review the materials from the Week 2 tutorial on reading error messages - remember, you are the detective! 🔍 
+
+✅ These errors mean that you will not be able to knit the document unless you comment out the code that generates them. 
+
+✅ Remember to RUN ALL CODE CHUNKS IN ORDER AS YOU GO THROUGH THIS NOTEBOOK (if you skip some, you might see some unexpected errors)
+
+✅ Do not forget about the keyboard shortcuts for running code in RMD documents:
+
+* Ctrl/Cmd + Enter to run the current line/selection of code (if highlighted)
+
+* Ctrl/Cmd + Shift + Enter to run the entire code chunk 
+
+
+### 1.1 R has 5 basic types.
+
+* logical: TRUE, FALSE  
+* numeric: 1.0, 15.3
+  - double: 1.0, 15.3
+  - integer: -1,2  
+* complex: 1+4i  
+* character: "health care", "social care"
+
+Another important data type that helps to interact with categorical variables is 
+
+* factor: "apple", "banana", "orange"
+
+To work with date and time data we use the `{lubridate}` package 
+
+* date: "2026-07-01"
+* time: "15:30:43"
+* datetime: "2026-07-01 15:30:43 UTC"
+
+### 1.2 R also provides many functions to examine data type features, for example:  
+
+* `mode()` - how is the object stored in R? 
+* `class()` - what kind of object is it (high-level)?  
+* `typeof()` - what is the object’s data type (low-level)?  
+* `length()` - how long is the data?  
+
+If you would like to check if an object is a particular data type, there is a series of `"is.datatype()"` functions which produce a Boolean value output:
+
+* `is.logical()` to check if the data object holds a logical value (i.e., `TRUE` or `FALSE`)
+* `is.numeric()` to check if the data object is numeric
+* `is.double()` to check if the data object is a double-precision floating point number 
+* `is.integer()` to check if the data object is an integer
+* `is.complex()` to check if the data object is complex
+* `is.character()` to check if the data object is character
+* `is.factor()` to check if the data object is a nominal factor
+* `is.ordered()` to check if the data object is an ordinal factor 
+
+#### 1.2.1 datetime data 
+
+For datetime data `{lubridate}` also has a series of `"is.X()"` functions which mirror the constructors in base R above:
+
+* `is.Date()` to check if the data is a Date type
+* `is.timespan()` to check if the data object is a length of time 
+
+
+#### 1.2.2 Changing datatypes (i.e., type coercion) 
+
+To coerce or change an object to another data type, there is a series of `as.datatype()` functions 
+
+* `as.logical()` 
+* `as.numeric()`
+* `as.double()`
+* `as.integer()`
+* `as.complex()`
+* `as.character()`
+
+* `fct()` to encode a vector as a factor. There are `is._()` and `as._()` functions for membership and coercion 
+  - `as_factor()`: note the syntax difference from the other functions (using an underscore rather than a dot). This is because we will be using the factor coercion function from the `{forcats}` package rather than base R. See the Factor section for more details 
+  - `as.ordered()`: defaults to lexical ordering (alphabetical order) for coerced characters
+
+* `as_datetime()` 
+* `as_date()`
+
+#### 1.2.3 Describing dataframes 
+
+When working with dataframes (which we will learn more about in Week 4), there are 2 similar functions that are useful:  
+
+* `str()` to get the structure of an R object 
+* `dplyr::glimpse()` to see a more detailed glimpse of the structure of a dataframe, including a preview of the data 
+
+*📝 Note* remember the namespace syntax which uses double colon `::` means `package::function()`? So the above on line 105 means the `glimpse()` function from the `{dplyr}` package 
+
+## 2. Date and time 
+
+In R, date-time classes are not a primitive data type. Instead, to work with date-time data types we use the `{lubridate}` package, which is loaded with the `{tidyverse}`. 
+
+To get the current date or date-time, we can use the `today()` or `now()` functions
+
+```{r datetimenow}
+# for date object 
+vtoday <- today()
+
+vtoday
+
+# for date-time object 
+vnow <- now() # because we set the system time zone at the top of the document in our libraries code chunk, lubridate already knows what timezone we are in 
+
+vnow
+
+```
+
+We can get the individual components of our datetime and date objects with the accessor functions:
+
+* `year()`
+* `month()`
+* `mday()` (day of the month)
+* `yday()` (day of the year)
+* `wday()` (day of the week)
+* `hour()`
+*` minute()`
+* `second()`
+
+```{r lubridate-1}
+year(vtoday)
+
+month(vtoday)
+
+mday(vtoday)
+
+wday(vtoday)
+
+wday(vtoday, label = TRUE)
+
+wday(vnow, label = TRUE, abbr = FALSE)
+
+hour(vnow)
+
+minute(vnow)
+
+second(vnow)
+
+```
+
+
+The 3 ways you will most likely create a date/time are: 
+
+1. from a character string using the `{lubridate}` helper functions to parse the string. These helpers automatically work out the format once you specify the order of the component. To use them, identify the order in which year, month, and day appear in your dates, then arrange "y", "m", and "d" in the same order  - which will give you the name of the `{lubridate}` function
+
+2. individual date-time components spread across multiple columns in a data frame - which we will look at next week 
+
+3. an existing date/time object
+
+Let's look at some of the helper functions in Option 1. 
+
+```{r lubridate-2}
+# month day year input 
+mdy("June 1st, 2026")
+
+# day month year input 
+dmy("1-June-2026")
+
+# year month day input 
+ymd("2026-June-1")
+
+## these functions also take unqrouped numbers 
+ymd(20260601)
+
+## you can also use these functions to create a datetime object by adding an _ and h ms or s 
+ymd_hms("2025 June 1 15:45:34")
+
+## you can also force the creation of a datetime object by specifying a timezone 
+ymd(20250601, tz = "Europe/London")
+```
+
+To switch between date and date-time objects, you can use `as_datetime()` or `as_date()`
+
+```{r lubridate-3}
+as_datetime(today(tz = "Europe/London"))
+
+as_date(now())
+```
+
+### 2.1 Timezones 
+
+Unless otherwise specified, `{lubridate}` always uses UTC. UTC (Coordinated Universal Time) is the standard time zone used by the scientific community and roughly equivalent to its predecessor GMT (Greenwich Mean Time). It does not have Daylight Savings Time (DST), which makes a convenient representation for computation. To avoid confusion when manually specifying a timezone, R uses the international standard IANA time zones. These use a consistent naming scheme, typically in the form "<continent>/<city>" (there are a few exceptions because not every country lies on a continent). 
+
+To get a list of the timezone names, you can use `OlsonNames()`
+
+```{r olsonnames}
+OlsonNames()
+```
+
+Timezones in R are an attribute of date-time that only control printing. For example, these 3 objects represent the same instant in time: 
+
+```{r timezones-1}
+x1 <- ymd_hms("2027-06-01 12:00:00", tz = "America/New_York")
+x1
+
+x2 <- ymd_hms("2027-06-01 18:00:00", tz = "Europe/Copenhagen")
+x2
+
+x3 <- ymd_hms("2027-06-02 04:00:00", tz = "Pacific/Auckland")
+x3
+
+```
+
+You can verify they are the same using subtraction 
+
+```{r timezones-2}
+x1 - x2
+# Time difference of 0 secs
+
+x1 - x3
+# Time difference of 0 secs
+```
+
+You can change timezone in 2 ways:
+
+* `with_tz()`: to keep the instant in time the same, and change how it's displayed. Use this when the instant is correct, but you want a more natural display
+
+* `force_tz`: to change the underlying instant in time. Use this when you have an instant that has been labelled with the incorrect time zone, and you need to fix it
+
+
+```{r withtz}
+x4 <- c(x1, x2, x3)
+x4
+
+x4a <- with_tz(x4, tzone = "Australia/Lord_Howe")
+
+x4a
+
+# no difference in the instance of time between x4 and x4a
+x4a - x4
+```
+
+```{r forcetz}
+x4b <- force_tz(x4, tzone = "Australia/Lord_Howe")
+x4b
+
+# there is a difference in the instance of time as we changed this with force_tz. Compare to above 
+x4b - x4
+```
+
+### 2.2 Arithmetic with date and time data 
+
+In `{lubridate}` there are 3 important classes to represent time spans 
+
+* **durations**: which represent an exact number of seconds 
+
+* **periods**, which represent human units like weeks and months
+
+* **intervals**, which represent a starting and ending point
+
+#### 2.2.1 Durations 
+
+In R, when you subtract two dates, you get a `difftime` object, which records a time span of seconds, minutes, hours, days, or weeks. This ambiguity can make `difftimes` a little painful to work with, so we can use `duration` instead! 
+
+```{r difftime-duration}
+# difftime 
+tdiff <- today() - ymd(20221014)
+
+tdiff
+class(tdiff)
+
+# duration 
+tdiff_d <- as.duration(tdiff)
+
+tdiff_d
+class(tdiff_d)
+```
+
+Durations always record the time span in seconds. Larger units are created by converting minutes, hours, days, weeks, and years to seconds at the standard rate (60 seconds in a minute, 60 minutes in an hour, 24 hours in day, 7 days in a week, 365 days in a year). 
+
+Durations can be created with the following constructor functions: 
+
+* `dseconds()`
+* `dminutes()`
+* `dhours()`
+* `ddays()`
+* `dweeks()`
+* `dyears()`
+
+*📝 Note* a month is not a duration of time defined independently of when it occurs, but a special interval between two dates. Thus there is not a need for `dmonths()`
+
+Durations can be added or multiplied as well as added or subtracted to and from days. 
+
+```{r duration-1}
+2 * dyears(1)
+
+dyears(2) + dweeks(10) + dhours(15)
+```
+
+
+```{r duration-2}
+tomorrow <- today() + ddays(1)
+
+tomorrow
+
+last_year <- today() - dyears(1)
+
+last_year
+```
+
+Because Durations represent an exact number of seconds, sometimes you might get an unexpected result...
+
+```{r durations-2}
+one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "America/New_York")
+
+one_pm
+
+one_pm + ddays(1)
+```
+
+Why is one day after 1pm on March 12, 2pm on March 13?! If you look carefully at the date you might also notice that the time zones have changed. Because of DST, March 12 only has 23 hours, so if we add a full days worth of seconds we end up with a different time! 
+
+#### 2.2.2 Periods 
+
+Periods are time spans but don't have a fixed length in seconds, instead they work with "human" times, like days and months. That allows them to work in a more intuitive way. 
+
+```{r periods-1}
+one_pm
+
+one_pm + days(1)
+```
+
+Like Durations, Periods can be created with constructor functions: 
+
+* `seconds()`
+* `minutes()`
+* `hours()`
+* `days()`
+* `months()`
+* `weeks()`
+* `years()`
+
+Similarly, Periods can also be added or multiplied as well as added to dates. 
+
+```{r periods-2}
+10 * (months(6) + days(1))
+
+days(50) + hours(25) + minutes(2)
+```
+
+When adding to dates, compared to Durations, Periods are more likely to do what you expect:
+
+```{r periods-3}
+# A leap year
+## duration 
+ymd("2024-01-01") + dyears(1)
+
+## period
+ymd("2024-01-01") + years(1)
+
+# Daylight Savings Time
+## duration 
+one_pm + ddays(1)
+
+## period
+one_pm + days(1)
+```
+
+#### 2.2.3 Intervals 
+
+An Interval is a Duration with a starting point, making it so precise you can determine exactly how long it is. You can make an interval with `interval()` or `%--%` 
+
+```{r intervals-1}
+next_year <- today() + years(1)
+next_year
+class(next_year)
+
+int_ny <- (today() %--% next_year)
+int_ny
+class(int_ny)
+
+# we can use integer division to find out how many Periods fall in an Interval 
+(today() %--% next_year) %/% days(1)
+
+```
+
+The take home message around durations, periods, and intervals is: 
+
+> Follow Occum's Razor and always, pick the simplest data type and structure that solves your problem. If you only care about physical time, use a duration; if you need to add human times, use a period; if you need to figure out how long a span is in human units, use an interval.
+
+For a summary of the permitted arithmetic operations between different date and time data types see the figure below 
+
+![Permitted arithmetic operations between date and time classes](../figures/R-lubridate-arithmetic.png)
+
+*📝 Note* For the above code to work you will need to have the image in a higher level folder called figures in your working directory. This should be the case if you cloned from the course GitHub repository. If you have another set up, update the file path accordingly.
+
+
+## You did it! 🎉
+
+Well done for making it to the end of this notebook. If you have not done so yet, move to the Python datetime notebook next or the R missing data notebook. 
+
+---
+*Dr. Brittany Blankinship (2026)* 

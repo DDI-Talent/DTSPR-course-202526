@@ -1,0 +1,308 @@
+---
+title: "R data types notebook"
+subtitle: "Logical data"
+author: "Dr Brittany Blankinship"
+date: "`r Sys.Date()`"
+toc: true
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# first lets load the libraries we need for this notebook 
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse) # as the tidyverse is a whole suite of packages, we just need one lirbary call to load all that we need 
+```
+
+
+## 1. Introduction 
+
+In these notebooks we will be looking at the data types discussed in the Week 2 & 3 content, how they work in R, and how you can manipulate them. A data type of an object or variable specifies the type of data that is stored inside that object and how you can then interact with it.
+
+✅  *Reminder* that you can open the RMarkdown document outline at the top of this panel to navigate to different sections in this notebook. You can also collapse sections my clicking on the little arrow that appears by the line number. Note though that if you collapse a level 2 section, all level 3 sections contained within it will also collapse. Try this for line 16 Introduction to see what I mean
+
+*📝 Note* there is code throughout this workbooks which will intentionally produce an error. Try to read the error messages and see if you can understand what is causing the problem and why. Reading error messages and not being frightened by them is a key skill for any programmer! Review the materials from the Week 2 tutorial on reading error messages - remember, you are the detective! 🔍 
+
+✅ These errors mean that you will not be able to knit the document unless you comment out the code that generates them. 
+
+✅ Remember to RUN ALL CODE CHUNKS IN ORDER AS YOU GO THROUGH THIS NOTEBOOK (if you skip some, you might see some unexpected errors)
+
+✅ Do not forget about the keyboard shortcuts for running code in RMD documents:
+
+* Ctrl/Cmd + Enter to run the current line/selection of code (if highlighted)
+
+* Ctrl/Cmd + Shift + Enter to run the entire code chunk 
+
+
+### 1.1 R has 5 basic types.
+
+* logical: TRUE, FALSE  
+* numeric: 1.0, 15.3
+  - double: 1.0, 15.3
+  - integer: -1,2  
+* complex: 1+4i  
+* character: "health care", "social care"
+
+Another important data type that helps to interact with categorical variables is 
+
+* factor: "apple", "banana", "orange"
+
+To work with date and time data we use the `{lubridate}` package 
+
+* date: "2026-07-01"
+* time: "15:30:43"
+* datetime: "2026-07-01 15:30:43 UTC"
+
+### 1.2 R also provides many functions to examine data type features, for example:  
+
+* `mode()` - how is the object stored in R? 
+* `class()` - what kind of object is it (high-level)?  
+* `typeof()` - what is the object’s data type (low-level)?  
+* `length()` - how long is the data?  
+
+If you would like to check if an object is a particular data type, there is a series of `"is.datatype()"` functions which produce a Boolean value output:
+
+* `is.logical()` to check if the data object holds a logical value (i.e., `TRUE` or `FALSE`)
+* `is.numeric()` to check if the data object is numeric
+* `is.double()` to check if the data object is a double-precision floating point number 
+* `is.integer()` to check if the data object is an integer
+* `is.complex()` to check if the data object is complex
+* `is.character()` to check if the data object is character
+* `is.factor()` to check if the data object is a nominal factor
+* `is.ordered()` to check if the data object is an ordinal factor 
+
+#### 1.2.1 datetime data 
+
+For datetime data `{lubridate}` also has a series of `"is.X()"` functions which mirror the constructors in base R above:
+
+* `is.Date()` to check if the data is a Date type
+* `is.timespan()` to check if the data object is a length of time 
+
+
+#### 1.2.2 Changing datatypes (i.e., type coercion) 
+
+To coerce or change an object to another data type, there is a series of `as.datatype()` functions 
+
+* `as.logical()` 
+* `as.numeric()`
+* `as.double()`
+* `as.integer()`
+* `as.complex()`
+* `as.character()`
+
+* `fct()` to encode a vector as a factor. There are `is._()` and `as._()` functions for membership and coercion 
+  - `as_factor()`: note the syntax difference from the other functions (using an underscore rather than a dot). This is because we will be using the factor coercion function from the `{forcats}` package rather than base R. See the Factor section for more details 
+  - `as.ordered()`: defaults to lexical ordering (alphabetical order) for coerced characters
+
+* `as_datetime()` 
+* `as_date()`
+
+#### 1.2.3 Describing dataframes 
+
+When working with dataframes (which we will learn more about in Week 4), there are 2 similar functions that are useful:  
+
+* `str()` to get the structure of an R object 
+* `dplyr::glimpse()` to see a more detailed glimpse of the structure of a dataframe, including a preview of the data 
+
+*📝 Note* remember the namespace syntax which uses double colon `::` means `package::function()`? So the above on line 105 means the `glimpse()` function from the `{dplyr}` package 
+
+## 2. Logical 
+
+In R, Boolean data types are called `logical` taking the values `TRUE` and `FALSE`. You can also use `T` or `F`, but it is good practice to spell out the logical value in its entirety as `T` and `F` can be redefined and lead to all kinds of chaos. Logical values result from any logical statements that are made. 
+
+```{r logical-1}
+typeof(TRUE)
+
+typeof(FALSE)
+```
+
+It is possible to assign a Boolean value to a variable, but it is not possible to assign a value to a Boolean value (as `TRUE` and `FALSE` are reserved words).
+
+```{r logical-2}
+a_true_variable <- TRUE
+
+a_true_variable
+```
+
+If you run the following code chunk, it will stop execution at line 132 due to the error. Run each line of code line-by-line instead to see each line of code executed one at a time (lines 132, 134, 136). 
+
+```{r logical-3}
+TRUE <- 90 # this will produce an error 
+
+T <- 90 # but this will not!! Hence why you should not use T or F as synonyms for TRUE and FALSE
+
+typeof(T) # now T is a double rather than logical data type 
+
+```
+
+In Python, the Boolean data type values are True and False. If you attempt this in R, you will get an error as they need to be in all capital letters. 
+
+```{r logical-4}
+f <- False # this will produce an error 
+```
+
+*📝 Note* one of the many benefits of working in RStudio is the 4 pane layout. As you go through this notebook and run the code creating different objects, observe the "Global Environment" pane. Here you will see all of the different R objects with a summary of what they contain and how they are typed. To interactively view one of these objects, you can use the code `View(object)`. When working with data structures you can double click on the data object in the Global Environment which will automatically run the `View()` function for you.
+
+### 2.1 Converting data to and from logical 
+
+In R, like in Python, when coercing numeric and complex vectors into logical, zeros are FALSE and non-zero values are TRUE. 
+
+```{r logical-coercion-1}
+zero_int <- 0
+
+zero_int <- as.logical(zero_int)
+
+zero_int
+```
+
+
+```{r logical-coercion-2}
+pos_int <- 5
+
+pos_int <- as.logical(pos_int)
+
+pos_int
+```
+
+```{r logical-coercion-3}
+neg_dbl <- -5.4
+
+neg_dbl <- as.logical(neg_dbl)
+
+neg_dbl
+```
+
+
+```{r logical-coercion-4}
+comp <- 8 + 4i
+
+comp <- as.logical(comp)
+
+comp
+```
+
+You can also convert logical values to a character string or numeric values. Since `TRUE` and `FALSE` are equivalent to 1 and 0, they can be converted to the respective numeric types with `as.numeric()`, `as.double()`, and `as.complex()` 
+
+```{r logical-coercion-5}
+cat_true <- as.character(TRUE)
+
+cat_true # we can tell cat_true is now a character because it is printed in ""
+
+typeof(cat_true)
+```
+
+```{r logical-coercion-6}
+num_true <- as.numeric(TRUE)
+
+num_true 
+
+class(num_true)
+```
+
+```{r logical-coercion-7}
+comp_true <- as.complex(TRUE)
+
+comp_true
+
+class(comp_true)
+```
+
+
+### 2.2 Working with logical data types and values  
+
+Comparison operators: 
+
+```{r logical-comp-operators}
+# using the equal to comparison
+# this should evaluate to FALSE
+100 == 205 
+
+# using the not equal to comparison
+# this should evaluate to TRUE
+100 != 205 
+
+# using the greater than comparison
+# this should evaluate to FALSE
+100 > 205 
+
+# using the less than comparison
+# this should evaluate to TRUE
+100 < 205
+
+# using the greater than or equal to comparison
+# this should evaluate to FALSE
+100 >= 205 
+
+# using the less than or equal to comparison
+# this should evaluate to TRUE
+100 <= 205 
+```
+
+As an example, lets create a **vector** (the most basic data structure in R that we will learn about more next week, essentially a simple list) of numbers and ask R if the elements were greater than 5. Our output is going to be a logical vector where each element is either `TRUE` or `FALSE`
+
+```{r logical-vector-comp}
+# Create a vector using c() (concatenate or combine)
+x <- c(1, 5, 6, 7, 2, 8)
+
+# Are the elements of vector x greater than 5? Store results in vector y
+y <- x > 5
+
+# View y
+y
+
+# View class
+class(y)
+class(x)
+
+```
+
+You can also create a vector of logical statements, like the output of `y` above. And then convert these logical values to numeric and back given the `TRUE == 1` and `FALSE == 0` mapping.  
+
+```{r logical-vector}
+vlog <- c(TRUE, FALSE, TRUE, FALSE, FALSE, TRUE)
+
+vlog
+
+```
+
+
+```{r logical-vector-num}
+# Convert to numeric vector
+vlog_n <- as.numeric(vlog)
+
+# View vector
+vlog_n
+
+# Convert back to logical vector
+vlog_l <- as.logical(vlog_n)
+
+vlog_l
+```
+
+This also means that you can do math with logical values! This is useful if, for example, you’re trying to see how many `TRUE` values you have in your vector. In fact, applying any math operations to a logical vector will automatically convert the values to 1s and 0s.
+
+```{r logical-math}
+sum(vlog) # there are a total of 3 TRUE values or 1s 
+
+min(vlog) 
+
+max(vlog)
+
+mean(vlog) # this is not necessarily meaningful, but the point is that it does not throw an error because the logical vector is being treated as 1s and 0s (AKA as numbers)
+
+```
+
+## You did it! 🎉
+
+Well done for making it to the end of this notebook. If you have not done so yet, move to the Python boolean notebook next or move onto the R numeric notebook. 
+
+---
+*Dr. Brittany Blankinship (2026)* 

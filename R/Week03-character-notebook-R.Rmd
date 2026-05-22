@@ -1,0 +1,402 @@
+---
+title: "R data types notebook"
+subtitle: "Character data"
+author: "Dr Brittany Blankinship"
+date: "`r Sys.Date()`"
+toc: true
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# first lets load the libraries we need for this notebook 
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse) # as the tidyverse is a whole suite of packages, we just need one lirbary call to load all that we need 
+```
+
+
+## 1. Introduction 
+
+In these notebooks we will be looking at the data types discussed in the Week 2 & 3 content, how they work in R, and how you can manipulate them. A data type of an object or variable specifies the type of data that is stored inside that object and how you can then interact with it.
+
+✅  *Reminder* that you can open the RMarkdown document outline at the top of this panel to navigate to different sections in this notebook. You can also collapse sections my clicking on the little arrow that appears by the line number. Note though that if you collapse a level 2 section, all level 3 sections contained within it will also collapse. Try this for line 16 Introduction to see what I mean
+
+*📝 Note* there is code throughout this workbooks which will intentionally produce an error. Try to read the error messages and see if you can understand what is causing the problem and why. Reading error messages and not being frightened by them is a key skill for any programmer! Review the materials from the Week 2 tutorial on reading error messages - remember, you are the detective! 🔍 
+
+✅ These errors mean that you will not be able to knit the document unless you comment out the code that generates them. 
+
+✅ Remember to RUN ALL CODE CHUNKS IN ORDER AS YOU GO THROUGH THIS NOTEBOOK (if you skip some, you might see some unexpected errors)
+
+✅ Do not forget about the keyboard shortcuts for running code in RMD documents:
+
+* Ctrl/Cmd + Enter to run the current line/selection of code (if highlighted)
+
+* Ctrl/Cmd + Shift + Enter to run the entire code chunk 
+
+
+### 1.1 R has 5 basic types.
+
+* logical: TRUE, FALSE  
+* numeric: 1.0, 15.3
+  - double: 1.0, 15.3
+  - integer: -1,2  
+* complex: 1+4i  
+* character: "health care", "social care"
+
+Another important data type that helps to interact with categorical variables is 
+
+* factor: "apple", "banana", "orange"
+
+To work with date and time data we use the `{lubridate}` package 
+
+* date: "2026-07-01"
+* time: "15:30:43"
+* datetime: "2026-07-01 15:30:43 UTC"
+
+### 1.2 R also provides many functions to examine data type features, for example:  
+
+* `mode()` - how is the object stored in R? 
+* `class()` - what kind of object is it (high-level)?  
+* `typeof()` - what is the object’s data type (low-level)?  
+* `length()` - how long is the data?  
+
+If you would like to check if an object is a particular data type, there is a series of `"is.datatype()"` functions which produce a Boolean value output:
+
+* `is.logical()` to check if the data object holds a logical value (i.e., `TRUE` or `FALSE`)
+* `is.numeric()` to check if the data object is numeric
+* `is.double()` to check if the data object is a double-precision floating point number 
+* `is.integer()` to check if the data object is an integer
+* `is.complex()` to check if the data object is complex
+* `is.character()` to check if the data object is character
+* `is.factor()` to check if the data object is a nominal factor
+* `is.ordered()` to check if the data object is an ordinal factor 
+
+#### 1.2.1 datetime data 
+
+For datetime data `{lubridate}` also has a series of `"is.X()"` functions which mirror the constructors in base R above:
+
+* `is.Date()` to check if the data is a Date type
+* `is.timespan()` to check if the data object is a length of time 
+
+
+#### 1.2.2 Changing datatypes (i.e., type coercion) 
+
+To coerce or change an object to another data type, there is a series of `as.datatype()` functions 
+
+* `as.logical()` 
+* `as.numeric()`
+* `as.double()`
+* `as.integer()`
+* `as.complex()`
+* `as.character()`
+
+* `fct()` to encode a vector as a factor. There are `is._()` and `as._()` functions for membership and coercion 
+  - `as_factor()`: note the syntax difference from the other functions (using an underscore rather than a dot). This is because we will be using the factor coercion function from the `{forcats}` package rather than base R. See the Factor section for more details 
+  - `as.ordered()`: defaults to lexical ordering (alphabetical order) for coerced characters
+
+* `as_datetime()` 
+* `as_date()`
+
+#### 1.2.3 Describing dataframes 
+
+When working with dataframes (which we will learn more about in Week 4), there are 2 similar functions that are useful:  
+
+* `str()` to get the structure of an R object 
+* `dplyr::glimpse()` to see a more detailed glimpse of the structure of a dataframe, including a preview of the data 
+
+*📝 Note* remember the namespace syntax which uses double colon `::` means `package::function()`? So the above on line 105 means the `glimpse()` function from the `{dplyr}` package 
+
+## 2. Character 
+
+String data in R is called **character**. When working with character strings, the `{stringr}` package is our best friend. This package is automatically loaded when we call `library(tidyverse)`. 
+
+In R, character strings are denoted with either single `''` or double `""` quotation marks. To store a multi-line string, we need to use the `cat()` function. 
+
+Within the `{stringr}` package, there are 8 main verbs that work with patterns using regular expressions. All functions in `{stringr}` start with `str_` and take a vector of strings as the first argument. Verbs 4 to 7 have a `str_verb_all()` version of the function, which does the verb action to all matches rather than just the first instance. 
+
+1. `str_detect(x, pattern)`: tells you if there is a match to the pattern, logical output 
+2. `str_count(x, pattern)`: counts the number of patterns
+3. `str_subset(x, pattern)`: extracts the matching components
+4. `str_locate(x, pattern)`: gives the position of the match
+5. `str_extract(x, pattern)`: extracts the text of the match
+6. `str_match(x, pattern)`: extracts parts of the match defined by parentheses
+7. `str_replace(x, pattern)`: replaces the matches with new text
+8. `str_split(x, pattern)`: splits up a string into multiple pieces
+
+Some other useful functions to use with characters are:
+
+* `nchar()` or `stringr::str_length()` to get the length of a character, or of each character within a vector 
+* `str_c()` combines multiple character vectors into a single character vector. You can specify the `sep` argument with a string input which is then inserted between each character 
+* `str_glue()` for interpolating character strings 
+
+
+```{r character-1}
+string1 <- "Edinburgh is the capital of Scotland"
+
+string1
+
+typeof(string1)
+class(string1)
+mode(string1)
+```
+
+```{r character-multi}
+# a multi-line string variables
+string2 <- 'Edinburgh is
+the capital
+of Scotland'
+
+## note if you do not run the whole code chunk, you need to highlight all of the string2 object to run it. This means lines 575 to 577. Play around with this to see what I mean - e.g., put your cursor on line 576 and run the code to see what happens 
+
+# without using the cat() function - notice R input \n at the end of each line break. \ is an escape character and n means new line 
+string2
+
+cat(string2)
+
+```
+
+If you want to include a quote character as part of the string itself, you may be tempted to try something as follows:
+
+```{r character-quote}
+# 'This character contains a single quote (') character.'
+
+# un-comment the code above on line 591 and run it 
+
+## I have commented it out because it produces an error, which then makes RStudio include a red circle with an x in it at this and subsequent line numbers to highlight to us that there is an issue with our code. You can hover your cursor above the x to see what the error is without running the code even! Un-comment the code without running it and see what I mean 
+```
+
+But, as you can see this produces an error. We can do 2 things instead:
+
+1. delimit the character with the other type of quote 
+2. use an escape sequence (using the `\` to "escape" from the character)
+
+```{r character-quote-1}
+# option 1
+
+"This string contains a single quote (') character."
+
+'This string contains a double quote (") character.'
+
+```
+
+```{r character-quote-2}
+# option 2 
+
+'This string contains a single quote (\') character.'
+
+```
+
+To see the full list of escape sequence special characters run the following code, and read the "Character constants" section. 
+
+```{r character-escp-list}
+?"'"
+
+# or you can do the opposite - still read the "Character constants" section as it pulls up the same help documentation 
+?'"'
+```
+
+To include a literal backslash in a character string using escape characters, you need to use 2 `\\`
+
+```{r character-escape}
+"This string contains a backlash \\ character"
+```
+When you run the string above, the output shows both backslashes. What is happening here? 
+
+The printed representation of a string is not the same as the string itself, because the printed representation shows the escapes. To see the raw contents of the string, use `writeLines()`:
+
+```{r character-raw-string}
+
+writeLines("This string contains a backlash \\ character")
+```
+
+
+### 2.1 Converting to and from character data 
+
+When working with different data structures, if one value is a character, the entire object will be parsed as a character string data type. In particular with messy data and variables you expect to be numeric, this can lead to a lot of headaches as you cannot do math with a vector of numbers classed as characters. 
+
+```{r character-num-vec}
+# lets create a vector of all numbers but 1 is a character string
+ex_cvec <- c(3, 56.7, 2, 90, "3")
+
+ex_cvec 
+class(ex_cvec)
+```
+
+Notice as well in the print out of `ex_cvec` that all elements of the vector are represented in quotation marks, this means they are characters! 
+
+```{r character-num-vec-error}
+sum(ex_cvec) # produces an error - try and read the error to understand what went wrong 
+```
+
+
+```{r character-num-vec-fix}
+# we can easily fix this with the as.double function to change the data type 
+ex_cvec_num <- as.double(ex_cvec)
+
+sum(ex_cvec_num) # no error, happy days with the expected data type 
+```
+
+As described above in the R Numeric data types notebook (Week03-numeric-notebook-R.RMD), when converting a character object to numeric with `as.numeric()`, anything that cannot be parsed will turn into NA. This means anything other than numbers in quotation marks. 
+
+We could now easily convert the `ex_cvec_num` object back to a character. *Any data type* in R can be successfully converted to a character. 
+
+```{r num-character-vec}
+ex_cvec_c <- as.character(ex_cvec_num)
+
+ex_cvec_c
+class(ex_cvec_c)
+```
+
+
+### 2.2 Working with character data & regular expressions 
+
+```{r string-length}
+# let's remind ourselves what string1 consisted of 
+string1
+
+nchar(string1)
+
+## or the stringr version 
+str_length(string1)
+```
+
+You can use the `str_detect()` function to detect the presence or absences of a pattern in a string. The regular expression "[aeiou]" matches any single character that is a vowel. 
+
+```{r strdetect}
+str_detect(string1, pattern = "[aeiou]") 
+
+```
+
+```{r strdetect-vec}
+# if you input a character vector, str_detect will output a logical vector 
+
+c_vec <- c("The", "summer", "is", "a", "great", "time", "to", "go", "to", "the", "beach")
+
+str_detect(c_vec, pattern = "mm")
+```
+
+You can use `str_count()` to count the number of matches in a string. 
+
+```{r strcount}
+str_count(string1, pattern = "[aeiou]") # there are 10 vowels in our string 
+
+str_count(c_vec, pattern = "[aeiou]")
+
+```
+
+You can use `str_view()` to view the HTML rending of a regular expression match (i.e., the underlying representation of a string and how the pattern has matched. This shows the first match. 
+
+```{r strview}
+str_view(string1,  pattern = "[aeiou]")
+
+```
+
+By default, regular expressions will match any part of a string. It’s often useful to **anchor** the regular expression so that it matches from the start or end of the string. You can use:
+
+* `^` to match the start of the string
+* `$` to match the end of the string
+
+🔋💰 To remember which is which, try this mnemonic: 'if you begin with power (^), you end up with money ($).' 
+
+```{r regex-anchor}
+str_view(c_vec, pattern = "^t")
+
+```
+
+```{r regex-anchor-2}
+str_view(c_vec, pattern = "h$")
+
+```
+
+You can use `str_subset()` to subset or extract matching elements. If you use the argument `negate = TRUE`, this will return non-matching elements. 
+
+```{r strsubset-match}
+str_subset(c_vec, pattern = "o")
+
+```
+
+``` {r strsubset-nonmatch}
+str_subset(c_vec, pattern = "o", negate = TRUE)
+```
+
+You can use `str_locate()` to locate the position of patterns in a character string. In the output, the first column (start) gives the position at the start of the match, and the second column (end) gives the position of the end.
+
+```{r strlocate}
+str_locate(c_vec, pattern = "t") 
+
+```
+
+Following on from this, if you wanted to extract the matching patterns from a character string rather than just locate them, you can use `str_extract()`
+
+```{r strextract-1}
+str_extract(c_vec, pattern = "[aeiou]")
+```
+
+It may not be clear with `c_vec` but using `str_extract()` with `string1` produces a somewhat expected result - what do you think is happening?
+
+```{r strextract-2}
+str_extract(string1, pattern = "[aeiou]")
+```
+
+The output is only the first extracted match! To get all matches we can use `str_extract_all()`
+
+```{r strextractall}
+str_extract_all(string1, pattern = "[aeiou]")
+
+```
+
+You can use `str_match()` to extract matched groups from a character string. This function extracts parts of the match defined by parentheses 
+
+```{r strmatch-1}
+str_match(string1, pattern = "(.)[aeiou](.)") # regular expression to extract characters on either side of the vowel 
+```
+
+When you want to change or replace aspects of a string, you can use `str_replace()`. 
+
+```{r strreplace}
+str_replace(c_vec, pattern = "[aeiou]", replacement = "?")
+```
+
+Notice that only the 1st vowel is replaced (e.g., `"s?ummer"` and `"gr?at"`). To replace all of the matched patterns we can use str_replace_all
+
+```{r strreplace-all}
+str_replace_all(c_vec, pattern = "[aeiou]", replacement = "?")
+```
+
+To split up your string into multiple pieces, you can use `str_split()`
+
+```{r strsplit}
+str_split(string1, pattern = "[aeiou]|[AEIOU]") # here I have used the or operator | in the regular expression to include both lower case | (or) upper case vowels 
+```
+
+To join multiple strings together the `{stringr}` package has `str_c()`:
+
+```{r strc}
+# lets join the c_vec into a single string rather than a vector of strings 
+c_vec
+
+str_c(c_vec, collapse = "- ")
+```
+
+In Python there are f-strings for interpolation, which `{stringr}` executes via `str_glue()`. When working with data frames, `str_glue_data()` can be particularly useful in data pipelines or when creating summaries of your data. 
+
+```{r strglue}
+activity <- "Data Science"
+
+str_glue("{activity} is fun")
+```
+
+## You did it! 🎉
+
+Well done for making it to the end of this notebook. If you have not done so yet, move to the Python string notebook next or the R factor notebook. 
+
+---
+*Dr. Brittany Blankinship (2026)* 
