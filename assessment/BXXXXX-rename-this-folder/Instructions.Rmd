@@ -1,0 +1,167 @@
+---
+title: "Assessment Instructions 2025-2026"
+subtitle: "Data Types and Structures in Python and R HEIN11068"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The purpose of this assignment is to summatively assess your learning across the course. The final assignment in the *"Data Types and Structures in Python and R"* HEIN11068 course  will involve coding tasks and accompanying reports, with all files submitted in a zip file. You are asked to complete 2 coding tasks: 1 in Python and 1 in R [^instructions-footnote]. For each task, you will also write an accompanying report.
+
+You are given 2 tasks, and can select which programming language to use to solve them. You must use both Python and R in your final assignment. That is, there are 2 coding tasks and 2 languages - which task you solve in which language is up to you. **You cannot use the same programming language for both tasks**. 
+
+For example, you can decide between the following approaches:
+
+* Task 1: Python 
+* Task 2: R 
+
+**or** 
+
+* Task 1: R 
+* Task 2: Python
+
+Both tasks must be solved for the submission to be complete; one task in Python and one task in R. Any submissions solving only one task, or using only one programming language, will be considered incomplete.
+
+[^instructions-footnote]: These instructions are also available on Learn.
+
+You can find an FAQ about the assessment on the Questions about the Assessment discussion board. If your question is not answered in the FAQ, do post it and a member of the teaching team will respond.
+
+> The assignment is due 29 June 2026 at 14:00 BST (UCT+1). 
+
+FILES 🗂️
+
+The Submission-Declaration, data files, and notebook files (.ipynb and .RMD) can be found under the assessment folder on our course GitHub repository. Here you will also find README-important-submission-instructions.RMD, attached as an HTML below. The data files needed for the assignment are found in the data folder of the repository and include:
+
+* healthboards.csv
+* scot_unintentional_injuries.csv
+* task2_data.json
+
+To get access to the data files and notebook files, you'll need to open Noteable via the link in Learn. Open a Standard Notebook (Python 3) server and pull the new notes.
+
+👾👾👾
+https://github.com/DDI-Talent/DTSPR-course-202526
+👾👾👾
+
+## Coding Tasks 
+
+### Task 1 
+
+In this task you are asked to investigate the data in `scot_unintentional_injuries.csv` and `healthboards.csv`. 
+
+The Unintentional Injuries dataset from Public Health Scotland provides information on emergency hospital admissions as a result of unintentional injuries and assaults. You can find more [information about the unintentional injuries data set here, including a data dictionary](https://www.opendata.nhs.scot/dataset/unintentional-injuries/resource/aee43295-2a13-48f6-bf05-92769ca7c6cf) and [here for more information about the health boards dataset](https://www.opendata.nhs.scot/dataset/geography-codes-and-labels/resource/652ff726-e676-4a20-abda-435b98dd7bdc). Do not import the data via the URL, you must use the data files provided for this assignment. 
+
+Follow the steps below to ultimately answer the final questions with the data. 
+
+* load the necessary libraries and packages
+* read in the data
+* join the two data sets together
+* check the data types of the variables of interest and ensure they are they type you want them to be. If not, change them.
+* check for the content/information contained within your variables of interest and ensure you are satisfied
+with the presentation
+* check for and deal with any missing data, if deemed appropriate
+* check the data formats (wide vs long) and transform if it is not appropriate
+
+*Question:* **Among people aged 65 and older in 2024/25, did NHS Lothian and NHS Greater Glasgow and Clyde have the same 4 most common causes of accidental injuries leading to emergency hospital admissions? What were they (the 4 most common causes of accidental injury in these regions)?**
+
+### Task 2 
+
+There has been an IT failure in the prescribing databases in a local area. The only remaining data around medications is the backup file below, but it has been scrambled.
+
+Explore the following data object `medications`. We know from notes that the data should include information on pill shape, color, where it was prescribed, when it was prescribed, the BNF (British National Formulary) code, dose frequency, recommended dose, unit of measure of dose, maximum safe temperature for storage in Celsius, and if it needs to be refrigerated.
+
+Select 7 of the 10 elements of data and reconstruct the dataset about medications. Present `medications` in a clearer and better structured format, ensuring that the data structure and data types are appropriate, given the (limited) information provided.
+
+The code to load the data object `medications` has been provided below.
+
+#### Python starter code 
+
+```{python task2-data-p}
+import json
+
+# this function just loads the data from files, there is no need to understand how it does it.
+def load_json_file_named(file_name):
+    try: 
+        loaded_data = [ ]
+        file_location = f"data/{file_name}"
+        with open(file_location, 'r') as file: # or f"data/{file_name}" depending on your files
+            loaded_data =  json.load(file)
+    except OSError as e:
+        print(f"Error. Does the file exist in this folder? {file_location}\n\n {e}")
+    return loaded_data
+
+medications = load_json_file_named('task2_data.json')
+```
+
+#### R starter code 
+
+```{r task2-data-r}
+# install.packages("rjson")
+# uncomment above if you have not installed the package before 
+
+library(rjson)
+
+medications <- fromJSON(file= "data/task2_data.json")
+```
+
+You are expected to solve these tasks using the approaches and code taught on the course. If you decide to use libraries/modules or approaches not taught on the course are used:
+
+* the source must be referenced (e.g., GenAI, StackOverFlow, etc.)
+* how you validated the trustworthiness and suitability of the source must be mentioned
+
+This can be done in code comments or an appendix. 
+
+## Accompanying Report 
+
+**Word Limit**: ~550 words for each task, a total of 1100 words maximum across both tasks 
+
+Alongside each task, you must write a written report accompanying your solution to the task. In this report you are to outline your rationale for selecting the given programming language to solve the task and address the following questions:
+
+* Why did you choose this programming language?
+* Why did you not choose the other programming language?
+* What is the impact of your decision of programming language on your approach to solving the task?
+* What would you have done differently if you chose the other programming language to solve this task? How would your approach change? What other decisions would you have made? 
+* What data types did you select to use in solving the task and why did you decide against other data types in the programming language?
+* What data structure(s) did you select to use in solving the task and why did you decide against other data structure(s) in the programming language?
+
+The word limits are a maximum or "up to" limit, not a requirement. If you are able to write your report in a shorter number of words, do not feel the need to pad your report to reach the word limit.
+
+## 💡💡Top tips 💡💡
+
+* Include all the code that you used to arrive at the conclusion/answer to the tasks. You do not need to include all code that you tried, just the code needed to arrive to your answer to the task.
+* Split your code into code cells/code chunks.
+* In a perfect world, we should be able to run your code and see the same results you see. Markers will run your code while marking.
+* Make sure you explicitly answer/solve the tasks. For Task 1, you are to provide your answer in 1-2 sentences.
+* Your writing should be concise and precise.
+* You are welcome to write your report in a Word document or other word processor of your choosing and then copy this over to the appropriate sections in the IPYNB or RMD files. This can be an easy way to get the word count as well.
+* The word limits are a maximum or "up to" limit. If you are able to write your report in a shorter number of words, do not feel the need to pad your report to reach the word limit.
+* In your code we are not looking for anything beyond what was taught in the course.
+
+## Course Learning Outcomes 
+
+1. Demonstrate a critical understanding of how data is stored in computer systems, the data life cycle, the benefits and limitations of R and Python programming languages for handling data, and the importance of best data management and programming practices in health and social care systems.
+
+2. Apply R and Python programming skills to collect, handle, document, store, and use data, best data management practice to make data findable, accessible, interoperable and reusable, and best programming practice to write maintainable, dependable, efficient and reusable code.
+
+3. Utilise logical, analytical, and problem-solving skills to make informed decisions about the most appropriate data types and structures to use when creating data sets for downstream analysis or designing software.
+
+4. Demonstrate the ability to effectively communicate about different data types and structures and their advantages and disadvantages with a wide variety of audiences.
+
+## Marking Criteria 
+
+In this assessment, marking will take place against the course learning objectives (LOs) 2-4. By submitting the assessment, students demonstrate LO1. 
+
+**Code quality [LO2] - 35% **
+
+* Code is clean, meaningful, and well structured, integrating good coding practice. An understanding of Python and R and related libraries/modules/packages taught on the course is clearly demonstrated. At this level, we do not expect to see highly refactored or optimized code.   
+
+**Problem solving and approach [LO3] - 30%**
+
+* Evidence of analytical thinking and problem decomposition in completing the coding tasks, integrating what has been taught in the course
+
+**Communication [LO4] - 35% **
+
+* Task reports are well reasoned and explained. Decisions around programming languages are clear and limitations and strengths are clearly and accurately communicated. Discussion is presented in clear academic writing showing critical analysis and understanding of the process of completing the tasks, how the programming languages are similar and different, and the larger context of data types and structures. 
+
+Critical thinking is expected **throughout your submission**, not only in the problem solving and approach or communication sections. 

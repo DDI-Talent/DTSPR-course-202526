@@ -1,0 +1,57 @@
+---
+title: "README"
+---
+
+## --- FIRST THING ---
+
+> The first time you start work on your assessment...
+
+- Rename the higher level folder `BXXXXX-rename-this-folder` with your exam number. This will then be the folder that you zip for your submission
+- Rename the both the `.RMD` and `.ipynb` files with your exam number (e.g., B123456)
+- Fill in the author lines of both the `.RMD` and `.ipynb` files with your exam number (e.g., B123456)
+
+> And be sure to follow the file structure example at the end of this document
+
+**************************************************
+
+## Submission requirements
+
+Your submission should include the files specified in the assessment instructions.
+This includes:
+
+1. A `.ipynb` file containing your Python task and write up
+2. An `.Rmd` file containing your R task and write up 
+
+Your `.ipynb` and `.Rmd` files must be named according to your exam number, as specified in the assessment brief.
+
+3. Any additional files required to support your work (e.g. data, images, or other artefacts)
+
+4. An RStudio project file (`DTSPR-assessment.Rproj`) is also included.
+This file should be **included** in your submission.
+This helps markers reproduce your work in isolation.
+
+You do not need to submit rendered outputs (e.g. HTML, PDF, or Word documents) unless you wish to. 
+You can optionally include HTML versions in your zip file submission.
+However, ensuring your `.Rmd` file renders successfully, will mean it will also render for  markers in the marking process.
+
+## File structure
+
+Organize all files within a single directory.Additional subdirectories (e.g. for data or outputs) may be used if appropriate and clearly structured.
+
+Any file paths used in your code and referenced in your report must be relative to the project root and correctly specified, so that the document renders successfully within the submitted directory structure.
+
+Compress your submission into a `.zip` file named according to your exam number (i.e., the renamed `BXXXXXX-rename-this-folder`). If you are working in Noteable, this will mean downloading the files for your submission from Noteable, and compressing (AKA zipping) that folder on your device for submission to the Learn TurnItIn Submission box. 
+
+🎥 *See the video on Learn under the "Assignment Submission Folder" for a step-by-step of this process.*
+
+A typical submission structure should look like the following, and contain the first five files at a minimum.
+Not following this structure may incur a mark penalty.
+
+- `BXXXXXX-rename-this-folder.zip`
+    - `Submission-Declaration.docx` - cover page for your submission with required AI declaration and metadata around your submission. If not completed, 5% will be deducted from your overall mark.
+    - `DSTPR-assessment.Rproj` - we need this to open your project
+    - `.Rhistory`     - this can help us understand your work
+    - `BXXXXXX.Rmd`   - your R coding task and report 
+    - `BXXXXXX.ipynb` - your Python coding task and report 
+    - `data/`, `outputs/`, or `figures/` - if required
+    - other supporting files as needed
