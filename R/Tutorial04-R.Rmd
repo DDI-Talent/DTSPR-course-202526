@@ -1,0 +1,304 @@
+---
+title: "Tutorial 4 R Notebook"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this tutorial there are tasks for working with vectors, lists, and tibbles/data frames.
+
+* Vectors = Tasks 1-8 
+* Lists = Tasks 9-10 
+* Tibbles/Data frames = Tasks 11-16 
+
+The aim of this tutorial notebook is to give you some (guided) hands-on experience working with different data structures in R.
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# it is always good practice to load the packages needed for the document at the top
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse)
+```
+
+
+## Vectors 
+
+### Tasks 1 - 8
+
+Answer the following questions as it relates to vector `nums`. 
+
+```{r vector}
+nums <- c(3, 67, 89.4, 50, 111, 45, 2, 6,8, 45,
+       32, 444, 65, 47, 8, 90, 2, 95, 21, 1)
+
+cities <- c("Edinburgh", "Glasgow", "Stirling")
+```
+
+1. What is the length of `nums`?
+
+```{r task-1}
+## your answer
+
+
+```
+
+
+2. What is the data type contained by the vector `nums`? 
+
+```{r task-2}
+## your answer
+
+
+```
+
+
+3. How many values in vector `nums` are 50 or below? Which values are they?
+
+```{r task-3}
+## your answer 
+
+
+```
+
+
+4. How many values in vector `nums` are above 35? Which values are they?
+
+```{r task-4}
+## your answer
+
+
+```
+
+
+5. How many values in vector `nums` are below 40 or above 80? Which values are they? 
+
+```{r task-5}
+## your answer 
+
+
+```
+
+
+6. What is the mean of vector `nums`?
+
+```{r task-6}
+## your answer
+
+
+```
+
+
+7. Sort the vector `nums` in ascending order 
+
+```{r task-7}
+## your answer 
+
+
+```
+
+
+8. Merge vector `nums` with the vector `cities`. Before running the code, What do you expect the resulting data type of the vector to be and why?   
+
+
+```{r task-8}
+## your answer 
+
+
+```
+
+
+## Lists 
+
+### Task 9.1 
+
+Create a list containing strings, numbers, vectors and logical values. 
+
+```{r}
+## your answer 
+
+
+```
+
+### Task 9.2 
+
+Add the string "peonies" to your list and make it element 3
+
+```{r}
+## your answer 
+
+
+```
+
+
+### Task 10 
+
+Create a named list comprised of colors blue, red, green; animals dog, cat, horse; and age 33, 56, 24. Add a new name value pair to the list  flower comprised of daisy, rose, and lily.Then convert this named list to a tibble. 
+
+**Hint** Do not forget that there is a difference between `[]` and `[[ ]]`
+
+```{r}
+## your answer 
+
+
+```
+
+
+## Data frames/tibbles
+
+For this series of tasks we will be using a publicly available dataset from [Public Health Scotland around Stroke Activity](https://www.opendata.nhs.scot/dataset/scottish-stroke-statistics/resource/47656572-e196-40c8-83e8-08b0b223b2e6). This dataset provides "Information on hospital activity related to cerebrovascular disease (including stroke and subarachnoid haemorrhage)." Look through the link and read the data dictionary at the bottom to familiarise yourself with the variables.  
+
+We will first read in the data. You can read in data from a URL with the `readr::read_csv()` function by inputting the URL as a character string - how helpful! From the link above to the data set there is a URL I have copied at the top of the page. It is good practice when first reading in a data set to name it and add `_raw` or some delineation that it is the raw data. As you process the data for your analytic purposes, you can then save the data in an object without this delineation. This allows you to maintain an object with a version of the raw data that you can refer to later if needed. 
+
+```{r import-data}
+stroke_raw <- read_csv("https://www.opendata.nhs.scot/dataset/f5dcf382-e6ca-49f6-b807-4f9cc29555bc/resource/47656572-e196-40c8-83e8-08b0b223b2e6/download/stroke_activitybyhbr.csv")
+```
+
+### Task 11 
+
+Look through the imported data to check it looks as it should based on the data dictionary. Are all the expected variables included? What dimensions does the dataframe have? Do the data types of these variables look to be correct? 
+
+*A useful new function* There is a useful function called `head()` which will print by default the first 5 rows of a dataframe. The counterpart is `tail()` which print the last 5 rows by default. Both functions take the argument `n = ` if you wish to specify a different number of rows other than 5. There are counterpart functions in Python with the same name and functionality!
+    
+This will help in solving the task, but you will need to use some other summary/description functions as well.
+
+```{r}
+## your answer here 
+
+
+```
+
+
+### Task 12 
+
+We do not need all of the columns in the dataset. The only variables we need for the next tasks are `FinancialYear`, `AdmissionType`, `AgeGroup`, `Diagnosis`, and `NumberOfDischarges`. Within the `HBR` variable, "S92000003" is the country code for Scotland. The `Sex` variable we do not need for this task, but it too includes an aggregate level "All". Filter the data such that only these aggregate level are included for these 2 variables. Filter the data accordingly and save this processed dataset into an object called `stroke`.
+
+**Hint** the object `stroke` should contain 960 rows and 5 columns 
+
+```{r}
+## your answer 
+
+
+```
+
+### Task 13 
+
+Check the data types of the remaining 5 variables and convert them to a better data type if needed. 
+
+```{r}
+### your answer 
+
+
+```
+
+
+### Task 14 
+
+Look at the levels within the factors - is there anything unexpected?
+
+*Hint* Using `select()` here will not work as expected. This is due to the data structure resulting from the `select()` function - a tibble! If you want to pass via the pipe `|>` to a function which requires a vector input, you will instead want to use the function `pull()` from `{dpylr}`. 
+
+```{r}
+## your answer 
+
+
+```
+
+
+### Task 15 
+
+`AgeGroup` is a bit messy. It should be ordered and includes 2 aggregate levels. Remove the aggregate levels and order the remaining factor levels.
+
+**Hint** your `stroke` tibble should contain 640 rows and 5 columns 
+
+```{r}
+## your answer
+
+
+```
+
+
+### Task 16 
+
+Create a summary table with the average number of discharges with a stroke diagnosis by age group for all admissions in the financial years 2021/22 and 2022/23.
+
+**Hint 1** the function `summarise()` would be useful here 
+
+**Hint 2** further filtering of the data is needed for this task 
+
+```{r}
+## your answer 
+
+
+```
+
+
+### Bonus - consistent column names 
+
+Sometimes the formatting of column names in a dataframe is not consistent, which can cause errors and issues in your code. For example, in the January 2025 update to the data, the PHS team have changed the title case of the health board region column, which used to be `HBR` and is now `Hbr`. This will cause bugs in any code written previously using `HBR`. This is one example of why, in the process of reading in data, it can be a good idea to reformat column names for consistency (e.g., to be all lowercase, remove white spaces, etc.). Can you think of how we might programmatically make all column names lowercase? 
+
+I can think of at least 3 approaches, share on the discussion boards if you come up with others! 
+
+```{r step1}
+#1st make a copy of the df 
+stroke_copy <- stroke_raw
+
+stroke_copy
+```
+
+
+```{r approach1}
+## Approach 1 - enter janitor::clean_names()
+
+# because janitor is not installed in Noteable already, we need to 1st install it, then call it with library()
+install.packages("janitor")
+
+library(janitor)
+
+stroke_copy1 <- stroke_copy |> 
+  clean_names() # by default this transforms all column names to snake_case 
+
+
+stroke_copy1
+```
+
+The most standard approach for tackling this problem in R, is to use `janitor::clean_names()`. 
+
+```{r approach3}
+## Approach 2 - dplyr::rename_with() and stringr functions together 
+
+stroke_copy2 <- stroke_copy |> 
+  rename_with(str_to_lower)
+
+stroke_copy2
+
+```
+
+```{r approach3}
+## Approach 3 - use colnames and stringr functions together (watch out for data structures!)
+
+colnames(stroke_copy) <- stroke_copy |>
+  colnames() |> 
+  str_to_lower()
+
+# this returns a character vector, so we need to assign this to colnames of our df, not just the df itself 
+
+stroke_copy
+```
+
+
+The summary here is that (once again) **there are many ways to do the same thing - pick the one that makes the most sense to you and you can explain/understand the best.** If you wish to follow current best practice among `{tidyverse}` R users, then use `janitor::clean_names()`, however if another approach makes more sense to you, then use that one! 
+
+---
+
+Well done! 🎉 You have completed all of the tasks for the RMarkdown notebook for this tutorial. If you have not done so yet, now move to the Python notebook.
+
+Do not forget your 3 stars, a wish, and a step mini-diaries for this week once you have completed the tutorial notebooks and content for the week. ⭐⭐⭐🚀👣
+
+---
+*Dr Brittany Blankinship (2026)* 
+
+
