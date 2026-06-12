@@ -1,0 +1,477 @@
+---
+title: "Tutorial 4 R Notebook SOLUTIONS"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this tutorial there are tasks for working with vectors, lists, and tibbles/data frames. 
+
+* Vectors = Tasks 1-8 
+* Lists = Tasks 9-10 
+* Tibbles/Data frames = Tasks 11-16 
+
+The aim of this tutorial notebook is to give you some (guided) hands-on experience working with different data structures in R.
+
+```{r load-packages, echo=FALSE, message=FALSE}
+# it is always good practice to load the packages needed for the document at the top
+
+Sys.setenv(TZ = "Europe/London") # set timezone (TZ argument) to whatever timezone you may be in. The allows the to packages to work as intended
+
+library(tidyverse)
+```
+
+
+## Vectors 
+
+### Tasks 1 - 8
+
+Answer the following questions as it relates to vector `nums`. 
+
+```{r vector}
+nums <- c(3, 67, 89.4, 50, 111, 45, 2, 6,8, 45,
+       32, 444, 65, 47, 8, 90, 2, 95, 21, 1)
+
+cities <- c("Edinburgh", "Glasgow", "Stirling")
+```
+
+1. What is the length of `nums`?
+
+2. What is the data type contained by the vector `nums`? 
+
+3. How many values in vector `nums` are 50 or below? Which values are they?
+
+4. How many values in vector `nums` are above 35? Which values are they?
+
+5. How many values in vector `nums` are below 40 or above 80? Which values are they? 
+
+6. What is the mean of vector `nums`?
+
+7. Sort the vector `nums` in ascending order 
+
+8. Merge vector `nums` with the vector `cities`. Before running the code, What do you expect the resulting data type of the vector to be and why?   
+
+
+#### Task 1-8 solutions 
+
+1. What is the length of `nums`?
+
+```{r task-1-sol}
+length(nums)
+
+# or you could also look in your global environment and see num [1:20]
+```
+
+There is another function called `lengths()`, which does something different. Look up the documentation to see if you can understand what this function does differently.
+
+```{r legnths}
+lengths(nums)
+
+# lengths gives us the length of each element! Rather than the length of the data structure itself (vectors or lists)
+## this is super helpful when dealing with data structures like nested lists 
+```
+
+
+2. What is the data type contained by the vector `nums`? 
+
+```{r task-2-sol}
+typeof(nums)
+
+```
+
+Because of 84.4, all numbers in our vector are doubles. 
+
+3. How many values in vector `nums` are 50 or below? Which values are they?
+
+```{r task-3-sol}
+# to see the values 
+nums[nums <= 50] 
+
+# to get the count of values 50 or below 
+nums[nums <= 50] |> length()
+
+## or to get the index of the values that meet our condition of being 50 or below 
+which(nums <= 50)
+```
+
+4. How many values in vector `nums` are above 35? Which values are they?
+
+```{r task-4-sol}
+nums[nums > 35]
+
+nums[nums > 35] |> length()
+
+```
+
+5. How many values in vector `nums` are below 40 or above 80? Which values are they? 
+
+```{r task-5-sol}
+nums[nums < 40 | nums > 80]
+
+nums[nums < 40 | nums > 80] |> length()
+```
+
+6. What is the mean of vector `nums`?
+
+```{r task-6-sol}
+mean(nums)
+
+## or for mean plus other info 
+summary(nums)
+```
+
+7. Sort the vector `nums` in ascending order 
+
+```{r task-7-sol}
+sort(nums)
+
+```
+
+If you look at the documentation for sort (`?sort` in the console), you will see that the default behavior is for the argument `decreasing` to be set to `FALSE` (i.e., be in ascending order). 
+
+
+8. Merge vector `nums` with the vector `cities`. Before running the code, what do you expect the resulting data type of the vector to be and why?
+
+```{r task-8-sol}
+combo_vec <- c(nums, cities)
+
+combo_vec
+```
+
+The resulting vector is a character because vectors can only contain 1 data type. As `cities` is a character, the values of `nums` has been converted to a character as well (as denoted by the quotation marks around the numbers). 
+
+## Lists 
+
+### Task 9 
+
+### Task 9.1
+
+Create a list containing strings, numbers, vectors and logical values. 
+
+#### Task 9.1 solution
+
+There are endless potential solutions, the primary point is to emphasize that lists can contain multiple data types and to check your understanding of what these data types are by name. 
+
+```{r task-9}
+list_data <- list("orange", "apple", 
+                  c(5, 7, 9, 11), TRUE, 125.17, 75.83)
+
+list_data
+
+```
+
+Going back to the `length()` vs `lengths()` distinction made in task 1. This is a great data structure example to see the difference between these 2 functions. 
+
+```{r legnthvslegnths}
+length(list_data) # list has 6 elements 
+
+lengths(list_data) # length of each element in the list 
+```
+
+### Task 9.2 
+
+Add the string "peonies" to your list and make it element 3
+
+#### Task 9.2 Solution 
+
+Using `apend()` we can specify to add (or append) "peonies" after element 2, so in the position of element 3 in the list.
+
+```{r}
+list_data <- list_data |>
+  append("peonies", after = 2)
+
+list_data
+```
+
+### Task 10 
+
+Create a named list comprised of colors blue, red, green; animals dog, cat, horse; and ages 33, 56, 24. 
+
+Next in a new line of code, a new name value pair to the list flower comprised of daisy, rose, and lily.
+
+Then convert this named list to a tibble. 
+
+**Hint** Do not forget that there is a difference between `[]` and `[[ ]]`
+
+#### Task 10 Solution 
+
+```{r task-10}
+# create a named list 
+named_list <- list(colors = c("blue", "red", "green"),
+                   animals = c("dog", "cat", "horse"),
+                   age = c(33, 56, 24))
+
+named_list
+
+```
+
+```{r tasl-10-part2}
+
+# add new name value pair 
+named_list[["flower"]] <- c("daisy", "rose", "lily")
+
+## or
+named_list[["flower"]] <- c(named_list[["flower"]], c("daisy", "rose", "lily"))
+
+# check this has worked as expected
+named_list
+
+
+# convert to tibble 
+named_list_df <- as_tibble(named_list)
+
+named_list_df
+```
+
+Notice in the print out of `named_list` on line 220 that we have a `$` before the names. This `$` acts the same as `[[]]`, so we could also say: 
+
+```{r dollar-sign-index-sol}
+named_list$flower <- c("daisy", "rose", "lily")
+```
+
+This is the the same as line 214, just a different syntax (AKA style). 
+
+## Data frames/tibbles
+
+For this series of tasks we will be using a publicly available dataset from [Public Health Scotland around Stroke Activity](https://www.opendata.nhs.scot/dataset/scottish-stroke-statistics/resource/47656572-e196-40c8-83e8-08b0b223b2e6). This dataset provides "Information on hospital activity related to cerebrovascular disease (including stroke and subarachnoid haemorrhage)." Look through the link and read the data dictionary at the bottom to familiarise yourself with the variables.  
+
+We will first read in the data. You can read in data from a URL with the `readr::read_csv()` function by inputting the URL as a character string - how helpful! From the link above to the data set there is a URL I have copied at the top of the page. It is good practice when first reading in a data set to name it and add `_raw` or some delineation that it is the raw data. As you process the data for your analytic purposes, you can then save the data in an object without this delineation. This allows you to maintain an object with a version of the raw data that you can refer to later if needed. 
+
+```{r import-data}
+stroke_raw <- read_csv("https://www.opendata.nhs.scot/dataset/f5dcf382-e6ca-49f6-b807-4f9cc29555bc/resource/47656572-e196-40c8-83e8-08b0b223b2e6/download/stroke_activitybyhbr.csv")
+```
+
+### Task 11 
+
+Look through the imported data to check it looks as it should based on the data dictionary. Are all the expected variables included? What dimensions does the dataframe have? Do the data types of these variables look to be correct? 
+
+*A useful new function* There is a useful function called `head()` which will print by default the first 5 rows of a dataframe. The counterpart is `tail()` which print the last 5 rows by default. Both functions take the argument `n = ` if you wish to specify a different number of rows other than 5. There are counterpart functions in Python with the same name and functionality!
+    
+This will help in solving the task, but you will need to use some other summary/description functions as well.
+
+#### Task 11 Solution 
+
+```{r task-11}
+str(stroke_raw)
+
+glimpse(stroke_raw)
+
+dim(stroke_raw)
+
+head(stroke_raw)
+
+tail(stroke_raw, n = 6)
+```
+
+There are 15 variables in our dataset, as expected, and 43200 observations. Of these variables, there are 12 which are characters and may be better suited as factors. 
+
+### Task 12 
+
+We do not need all of the columns in the dataset. The only variables we need for the next tasks are `FinancialYear`, `AdmissionType`, `AgeGroup`, `Diagnosis`, and `NumberOfDischarges`. Within the `Hbr` variable, "S92000003" is the country code for Scotland. The `Sex` variable we do not need for this task, but it too includes an aggregate level "All". Filter the data such that only these aggregate level are included for these 2 variables. Filter the data accordingly and save this processed dataset into an object called `stroke`.
+
+**Hint** the object `stroke` should contain 960 rows and 5 columns 
+
+#### Task 12 Solution 
+
+```{r task-12}
+stroke <- stroke_raw |> 
+# the filter function must come first as after select, the HBR and Sex variables do not exist anymore. Try to run the code with the select function first and see what happens
+  filter(Hbr == "S92000003",
+         Sex == "All") |> 
+  select(FinancialYear, AdmissionType, AgeGroup,
+         Diagnosis, NumberOfDischarges)
+
+stroke
+```
+
+### Task 13 
+
+Check the data types of the remaining 5 variables and convert them to a better data type if needed. 
+
+#### Task 13 Solution 
+
+```{r task-13}
+glimpse(stroke) 
+
+stroke <- stroke |> 
+  mutate(FinancialYear = as.factor(FinancialYear),
+         AdmissionType = as.factor(AdmissionType),
+         AgeGroup = as.factor(AgeGroup),
+         Diagnosis = as.factor(Diagnosis))
+
+# check our work 
+glimpse(stroke)
+
+## a more advanced and elegant solution is to use the across and where functions to coerce all characters to be factors since all of the variables we wanted to change were characters 
+stroke |> 
+  mutate(across(where(is.character), as.factor))
+```
+
+
+### Task 14 
+
+Look at the levels within the factors - is there anything unexpected?
+
+*Hint* Using `select()` here will not work as expected. This is due to the data structure resulting from the `select()` function - a tibble! If you want to pass via the pipe `|>` to a function which requires a vector input, you will instead want to use the function `pull()` from `{dpylr}`. 
+
+#### Task 14 Solution
+
+```{r task-14}
+stroke |> 
+  pull(FinancialYear) |>
+  levels()
+
+# as mentioned above, notice that using select gives us NULL, which remember is a reserved word in R representing an undefined value 
+stroke |> 
+  select(FinancialYear) |> 
+  levels()
+
+stroke |> 
+  pull(AdmissionType) |> 
+  levels()
+
+stroke |> 
+  pull(AgeGroup) |> 
+  levels()
+
+stroke |> 
+  pull(Diagnosis) |> 
+  levels()
+# notice that stroke is lowercase while all other levels are in title case 
+  
+## when you have the correct data types in place (meaning characters are factors when you want them to be), the summary function will provide the factor levels and observations per level! Using data types to our advantage! 
+
+stroke |> 
+  summary()
+```
+
+
+It looks like some of our variables include aggregate level responses! Good thing we checked our data. Aggregate data is very common in health and social care data. It is crucial to check your data to ensure you are aware of any aggregate categories. Depending on your specific use case, you may wish to use only the aggregate levels or perhaps remove the aggregate levels and only work with the finer-grained categories.
+
+`AdmissionType` includes 3 unique levels as well as an aggregate "All" level. 
+
+`AgeGroup` includes 2 aggregate levels: "All Ages" and "Under75 years" and should be ordered. 
+
+`Diagnosis` does not have any aggregate levels. It is noted though that stroke is lowercase while all other levels are in title case.
+
+`FinancialYear` does not have any aggregate levels. 
+
+### Task 15 
+
+`AgeGroup` is a bit messy. It should be ordered and includes 2 aggregate levels. Remove the aggregate levels and order the remaining factor levels.
+
+**Hint** your `stroke` tibble should contain 640 rows and 5 columns 
+
+#### Task 15 Solution 
+
+```{r task-5}
+stroke <- stroke |> 
+  # first filter to out aggregate levels 
+  ## here ! means NOT so it is doing the opposite, meaning keeping only the rows that are NOT all ages or under75 years 
+  filter(!AgeGroup %in% c("All Ages", "under75 years")) |> 
+  mutate(AgeGroup = as.ordered(AgeGroup))
+
+stroke # we can see now that AgeGroup is <ord> for ordered factor 
+```
+
+Here we can use R's default alphabetical/lexographic factor ordering to our benefit. When we made `AgeGroup` a factor above, it was automatically in ascending order. By making it an ordered factor, we are simply making this level order explicit. 
+
+```{r task5-check}
+stroke |> 
+  pull(AgeGroup) |>
+  levels()
+```
+
+
+### Task 16 
+
+Create a summary table with the average number of discharges with a stroke diagnosis by age group for all admissions in the financial years 2021/22 and 2022/23.
+
+**Hint 1** the function `summarise()` would be useful here 
+
+**Hint 2** further filtering of the data is needed for this task 
+
+**Hint 3** Would it help of the data were grouped? 
+
+#### Task 16 Solution 
+
+```{r task-16}
+stroke |> 
+  filter(AdmissionType == "All", 
+         Diagnosis == "stroke",
+         FinancialYear %in% c("2021/22", "2022/23")) |>
+  # change the order of the group by variables to see how the output changes 
+  group_by(FinancialYear, AgeGroup) |> 
+  summarise(mean_discharge  = mean(NumberOfDischarges))
+```
+
+
+### Bonus - consistent column names 
+
+Sometimes the formatting of column names in a dataframe is not consistent, which can cause errors and issues in your code. For example, in the January 2025 update to the data, the PHS team have changed the title case of the health board region column, which used to be `HBR` and is now `Hbr`. This will cause bugs in any code written previously using `HBR`. This is one example of why, in the process of reading in data, it can be a good idea to reformat column names for consistency (e.g., to be all lowercase, remove white spaces, etc.). Can you think of how we might programmatically make all column names lowercase? 
+
+I can think of at least 3 approaches, share on the discussion boards if you come up with others! 
+
+```{r step1}
+#1st make a copy of the df 
+stroke_copy <- stroke_raw
+
+stroke_copy
+```
+
+
+```{r approach1}
+## Approach 1 - enter janitor::clean_names()
+
+# because janitor is not installed in Noteable already, we need to 1st install it, then call it with library()
+install.packages("janitor")
+
+library(janitor)
+
+stroke_copy1 <- stroke_copy |> 
+  clean_names() # by default this transforms all column names to snake_case 
+
+
+stroke_copy1
+```
+
+The most standard approach for tackling this problem in R, is to use `janitor::clean_names()`. 
+
+```{r approach3}
+## Approach 2 - dplyr::rename_with() and {stringr} functions together 
+
+stroke_copy2 <- stroke_copy |> 
+  rename_with(str_to_lower)
+
+stroke_copy2
+
+```
+
+```{r approach3}
+## Approach 3 - use colnames and {stringr} functions together (watch out for data structures!)
+
+colnames(stroke_copy) <- stroke_copy |>
+  colnames() |> 
+  str_to_lower()
+
+# this returns a character vector, so we need to assign this to colnames of our df, not just the df itself 
+
+stroke_copy
+```
+
+
+The summary here is that (once again) **there are many ways to do the same thing - pick the one that makes the most sense to you and you can explain/understand the best.** If you wish to follow current best practice among `{tidyverse}` R users, then use `janitor::clean_names()`, however if another approach makes more sense to you, then use that one! 
+
+---
+
+Well done! 🎉 You have completed all of the tasks for the RMarkdown notebook for this tutorial. If you have not done so yet, now move to the Python notebook.
+
+Do not forget your 3 stars, a wish, and a step mini-diaries for this week once you have completed the tutorial notebooks and content for the week. ⭐⭐⭐🚀👣
+
+---
+*Dr Brittany Blankinship (2026)* 
+
+
